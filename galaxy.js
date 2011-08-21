@@ -96,43 +96,43 @@ function XPoint() {
 
 function Star() {
     this.pos = {
-        x:0,
-        y:0,
-        z:0
+        x:0.0,
+        y:0.0,
+        z:0.0
     };
     this.vel = {
-        x:0,
-        y:0,
-        z:0
+        x:0.0,
+        y:0.0,
+        z:0.0
     };
 }
 
 function Galaxy() {
     this.mass = 0;
-    this.stars = new Array();
-    this.oldpoints = new Array();
-    this.newpoints = new Array();
+    this.stars = [];
+    this.oldpoints = [];
+    this.newpoints = [];
     this.pos = {
-        x:0,
-        y:0,
-        z:0
+        x:0.0,
+        y:0.0,
+        z:0.0
     };
     this.vel = {
-        x:0,
-        y:0,
-        z:0
+        x:0.0,
+        y:0.0,
+        z:0.0
     };
     this.galcol = 0;
 }
 
 function Universe() {
-    this.mat = [3][3]; /* Movement of stars(?) */
+    this.mat = new Array(new Array(3), new Array(3), new Array(3)); /* Movement of stars(?) */
     this.scale = 0.0; /* Scale */
     this.midx = 0; /* Middle of screen, x */
     this.midy = 0; /* Middle of screen, y */
     this.size = 0.0; /* */
-    this.diff = new Array(); /* */
-    this.galaxies = new Array(); /* the Whole Universe */
+    this.diff = []; /* array of doubles */
+    this.galaxies = []; /* the Whole Universe */
     this.f_hititerations = 0; /* # iterations before restart */
     this.step = 0; /* */
     this.rot_y = 0.0; /* rotation of eye around center of universe, around y-axis*/
@@ -151,21 +151,21 @@ function startover( mi ) {
     gp.rot_y = 0;
     gp.rot_x = 0;
 
-    gp.ngalaxies = mi.batchcount;
-    if( gp.ngalaxies < -MINGALAXIES ) {
-        gp.ngalaxies = NRAND( -gp.ngalaxies - MINGALAXIES + 1 ) + MINGALAXIES;
-    } else if( gp.ngalaxies < MINGALAXIES ) {
-        gp.ngalaxies = MINGALAXIES;
+    var ngalaxies = mi.batchcount;
+    if( ngalaxies < -MINGALAXIES ) {
+        ngalaxies = NRAND( -ngalaxies - MINGALAXIES + 1 ) + MINGALAXIES;
+    } else if( ngalaxies < MINGALAXIES ) {
+        ngalaxies = MINGALAXIES;
     }
 
     if( gp.galaxies == null ) {
-        gp.galaxies = new Array();
-        for( i = 0; i < gp.ngalaxies; ++i ) {
+        gp.galaxies = [];
+        for( i = 0; i < ngalaxies; ++i ) {
             gp.galaxies[i] = new Galaxy();
         }
     }
 
-    for( i = 0; i < gp.ngalaxies; ++i ) {
+    for( i = 0; i < ngalaxies; ++i ) {
         var gt = gp.galaxies[i];
         var sinw1, sinw2, cosw1, cosw2;
 
@@ -175,12 +175,12 @@ function startover( mi ) {
             // Galaxies still may have some green stars but are not all green.
         }
 
-        gt.nstars = (NRAND( MAX_STARS / 2 )) + MAX_STARS / 2;
-        gt.stars = new Array();
-        gt.oldpoints = new Array();
-        gt.newpoints = new Array();
+        var nstars = (NRAND( MAX_STARS / 2 )) + MAX_STARS / 2;
+        gt.stars = [];
+        gt.oldpoints = [];
+        gt.newpoints = [];
 
-        for( j = 0; j < gt.nstars; j++ ) {
+        for( j = 0; j < nstars; j++ ) {
             gt.stars[j] = new Star();
             gt.oldpoints[j] = new XPoint();
             gt.newpoints[j] = new XPoint();
@@ -214,7 +214,7 @@ function startover( mi ) {
 
         gp.size = GALAXYRANGESIZE * FLOATRAND + GALAXYMINSIZE;
 
-        for( j = 0; j < gt.nstars; ++j ) {
+        for( j = 0; j < nstars; ++j ) {
             var st = gt.stars[j];
             var oldp = gt.oldpoints[j];
             var newp = gt.newpoints[j];
@@ -259,7 +259,7 @@ function startover( mi ) {
 //    XClearWindow( mi.dpy, mi.window );
 
     if( 0 ) {
-        console( "ngalaxies=%d, f_hititerations=%d\n", gp.ngalaxies, gp.f_hititerations );
+        console( "ngalaxies=%d, f_hititerations=%d\n", ngalaxies, gp.f_hititerations );
         console( "f_deltat=%g\n", DELTAT );
         console( "Screen: " );
     }
@@ -301,17 +301,17 @@ function draw_galaxy( mi ) {
 
     eps = 1/(EPSILON * sqrt_EPSILON * DELTAT * DELTAT * QCONS);
 
-    for( i = 0; i < gp.ngalaxies; ++i ) {
+    for( i = 0; i < gp.galaxies.length; ++i ) {
         var gt = gp.galaxies[i];
 
-        for( j = 0; j < gp.galaxies[i].nstars; ++j ) {
+        for( j = 0; j < gp.galaxies[i].stars.length; ++j ) {
             var st = gt.stars[j];
             var newp = gt.newpoints[j];
             var v0 = st.vel.x;
             var v1 = st.vel.y;
             var v2 = st.vel.z;
 
-            for( k = 0; k < gp.ngalaxies; ++k ) {
+            for( k = 0; k < gp.galaxies.length; ++k ) {
                 var gtk = gp.galaxies[k];
                 var d0 = gtk.pos.x - st.pos.x;
                 var d1 = gtk.pos.y - st.pos.y;
@@ -344,7 +344,7 @@ function draw_galaxy( mi ) {
                 * gp.scale) + gp.midy;
         }
 
-        for( k = i + 1; k < gp.ngalaxies; ++k ) {
+        for( k = i + 1; k < gp.galaxies.length; ++k ) {
             gtk = gp.galaxies[k];
             d0 = gtk.pos.x - gt.pos.x;
             d1 = gtk.pos.y - gt.pos.y;
@@ -374,11 +374,11 @@ function draw_galaxy( mi ) {
 
 //        if( dbufp ) {
 //            XSetForeground( display, gc, MI_WIN_BLACK_PIXEL( mi ) );
-//            XDrawPoints( display, window, gc, gt.oldpoints, gt.nstars,
+//            XDrawPoints( display, window, gc, gt.oldpoints, gt.stars.length,
 //                CoordModeOrigin );
 //        }
 //        XSetForeground( display, gc, MI_PIXEL( mi, COLORSTEP * gt.galcol ) );
-//        XDrawPoints( display, window, gc, gt.newpoints, gt.nstars,
+//        XDrawPoints( display, window, gc, gt.newpoints, gt.stars.length,
 //            CoordModeOrigin );
 
         dummy = gt.oldpoints;
