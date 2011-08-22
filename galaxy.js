@@ -42,6 +42,7 @@ var DEFAULTS =
     "*ncolors:  64   \n" +
     "*fpsSolid:  true   \n";
 
+var NUMCOLORS = 64;
 var UNIFORM_COLORS = true;
 var reshape_galaxy = 0;
 var galaxy_handle_event = 0;
@@ -51,6 +52,22 @@ function NRAND( n ) {
 var MAXRAND = 2147483648.0; /* unsigned 1<<31 as a float */
 
 var galaxy_opts = {
+    delay: {
+        value: 20000,
+        desc: "Frame rate (0 - 100000)"
+    },
+    batchcount: {
+        value: -5,
+        desc: "Count (-20 - 20)"
+    },
+    cycles: {
+        value: 250,
+        desc: "Duration (10 - 1000)"
+    },
+    ncolors: {
+        value: 64,
+        desc: "Number of colors (10 - 255)"
+    },
     tracks: {
         on: true,
         desc: "turn on/off star tracks"
@@ -86,7 +103,7 @@ var QCONS = 0.001;
 
 var COLORBASE = 16;
 /* colors per galaxy */
-/* var COLORSTEP = (NUMCOLORS/COLORBASE) */
+var COLORSTEP = (NUMCOLORS/COLORBASE)
 
 
 function XPoint() {
@@ -151,7 +168,7 @@ function startover( mi ) {
     gp.rot_y = 0;
     gp.rot_x = 0;
 
-    var ngalaxies = mi.batchcount;
+    var ngalaxies = galaxy_opts.batchcount.value;
     if( ngalaxies < -MINGALAXIES ) {
         ngalaxies = NRAND( -ngalaxies - MINGALAXIES + 1 ) + MINGALAXIES;
     } else if( ngalaxies < MINGALAXIES ) {
