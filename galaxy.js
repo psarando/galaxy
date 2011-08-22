@@ -46,7 +46,7 @@ var UNIFORM_COLORS = true;
 var reshape_galaxy = 0;
 var galaxy_handle_event = 0;
 function NRAND( n ) {
-    return ((LRAND() % (n)))
+    return ((Math.random() % (n)))
 }
 var MAXRAND = 2147483648.0; /* unsigned 1<<31 as a float */
 
@@ -62,7 +62,7 @@ var galaxy_opts = {
 };
 
 function FLOATRAND() {
-    return (LRAND() / (MAXRAND))
+    return (Math.random() / (MAXRAND))
 }
 
 var MINSIZE = 1;
@@ -186,12 +186,12 @@ function startover( mi ) {
             gt.newpoints[j] = new XPoint();
         }
 
-        w1 = 2.0 * M_PI * FLOATRAND;
-        w2 = 2.0 * M_PI * FLOATRAND;
-        sinw1 = SINF( w1 );
-        sinw2 = SINF( w2 );
-        cosw1 = COSF( w1 );
-        cosw2 = COSF( w2 );
+        w1 = 2.0 * Math.PI * FLOATRAND();
+        w2 = 2.0 * Math.PI * FLOATRAND();
+        sinw1 = Math.sin( w1 );
+        sinw2 = Math.sin( w2 );
+        cosw1 = Math.cos( w1 );
+        cosw2 = Math.cos( w2 );
 
         gp.mat[0][0] = cosw2;
         gp.mat[0][1] = -sinw1 * sinw2;
@@ -203,16 +203,16 @@ function startover( mi ) {
         gp.mat[2][1] = -sinw1 * cosw2;
         gp.mat[2][2] = cosw1 * cosw2;
 
-        gt.vel.x = FLOATRAND * 2.0 - 1.0;
-        gt.vel.y = FLOATRAND * 2.0 - 1.0;
-        gt.vel.z = FLOATRAND * 2.0 - 1.0;
-        gt.pos.x = -gt.vel.x * DELTAT * gp.f_hititerations + FLOATRAND - 0.5;
-        gt.pos.y = -gt.vel.y * DELTAT * gp.f_hititerations + FLOATRAND - 0.5;
-        gt.pos.z = -gt.vel.z * DELTAT * gp.f_hititerations + FLOATRAND - 0.5;
+        gt.vel.x = FLOATRAND() * 2.0 - 1.0;
+        gt.vel.y = FLOATRAND() * 2.0 - 1.0;
+        gt.vel.z = FLOATRAND() * 2.0 - 1.0;
+        gt.pos.x = -gt.vel.x * DELTAT * gp.f_hititerations + FLOATRAND() - 0.5;
+        gt.pos.y = -gt.vel.y * DELTAT * gp.f_hititerations + FLOATRAND() - 0.5;
+        gt.pos.z = -gt.vel.z * DELTAT * gp.f_hititerations + FLOATRAND() - 0.5;
 
-        gt.mass = (FLOATRAND * 1000.0) + 1;
+        gt.mass = (FLOATRAND() * 1000.0) + 1;
 
-        gp.size = GALAXYRANGESIZE * FLOATRAND + GALAXYMINSIZE;
+        gp.size = GALAXYRANGESIZE * FLOATRAND() + GALAXYMINSIZE;
 
         for( j = 0; j < nstars; ++j ) {
             var st = gt.stars[j];
@@ -221,12 +221,12 @@ function startover( mi ) {
 
             var sinw, cosw;
 
-            w = 2.0 * M_PI * FLOATRAND;
-            sinw = SINF( w );
-            cosw = COSF( w );
-            d = FLOATRAND * gp.size;
-            h = FLOATRAND * exp( -2.0 * (d / gp.size) ) / 5.0 * gp.size;
-            if( FLOATRAND < 0.5 ) {
+            w = 2.0 * Math.PI * FLOATRAND();
+            sinw = Math.sin( w );
+            cosw = Math.cos( w );
+            d = FLOATRAND() * gp.size;
+            h = FLOATRAND() * exp( -2.0 * (d / gp.size) ) / 5.0 * gp.size;
+            if( FLOATRAND() < 0.5 ) {
                 h = -h;
             }
 
@@ -285,19 +285,17 @@ function draw_galaxy( mi ) {
     var i, j, k; /* more tmp */
     var dummy = null;
 
-//    if( !dbufp ) {
-//        XClearWindow( mi.dpy, mi.window );
-//    }
+//    XClearWindow( mi.dpy, mi.window );
 
     if( galaxy_opts.spin.on ) {
         gp.rot_y += 0.01;
         gp.rot_x += 0.004;
     }
 
-    cox = COSF( gp.rot_y );
-    six = SINF( gp.rot_y );
-    cor = COSF( gp.rot_x );
-    sir = SINF( gp.rot_x );
+    cox = Math.cos( gp.rot_y );
+    six = Math.sin( gp.rot_y );
+    cor = Math.cos( gp.rot_x );
+    sir = Math.sin( gp.rot_x );
 
     eps = 1/(EPSILON * sqrt_EPSILON * DELTAT * DELTAT * QCONS);
 
@@ -372,11 +370,6 @@ function draw_galaxy( mi ) {
         gt.pos.y += gt.vel.y * DELTAT;
         gt.pos.z += gt.vel.z * DELTAT;
 
-//        if( dbufp ) {
-//            XSetForeground( display, gc, MI_WIN_BLACK_PIXEL( mi ) );
-//            XDrawPoints( display, window, gc, gt.oldpoints, gt.stars.length,
-//                CoordModeOrigin );
-//        }
 //        XSetForeground( display, gc, MI_PIXEL( mi, COLORSTEP * gt.galcol ) );
 //        XDrawPoints( display, window, gc, gt.newpoints, gt.stars.length,
 //            CoordModeOrigin );
