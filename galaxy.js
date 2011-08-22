@@ -225,7 +225,7 @@ function startover( mi ) {
             sinw = Math.sin( w );
             cosw = Math.cos( w );
             d = FLOATRAND() * gp.size;
-            h = FLOATRAND() * exp( -2.0 * (d / gp.size) ) / 5.0 * gp.size;
+            h = FLOATRAND() * Math.exp( -2.0 * (d / gp.size) ) / 5.0 * gp.size;
             if( FLOATRAND() < 0.5 ) {
                 h = -h;
             }
@@ -237,7 +237,7 @@ function startover( mi ) {
             st.pos.z = gp.mat[0][2] * d * cosw + gp.mat[1][2] * d * sinw +
                 gp.mat[2][2] * h + gt.pos.z;
 
-            v = sqrt( gt.mass * QCONS / sqrt( d * d + h * h ) );
+            v = Math.sqrt( gt.mass * QCONS / Math.sqrt( d * d + h * h ) );
             st.vel.x = -gp.mat[0][0] * v * sinw + gp.mat[1][0] * v * cosw +
                 gt.vel.x;
             st.vel.y = -gp.mat[0][1] * v * sinw + gp.mat[1][1] * v * cosw +
@@ -317,9 +317,9 @@ function draw_galaxy( mi ) {
 
                 d = d0 * d0 + d1 * d1 + d2 * d2;
                 if( d > EPSILON ) {
-                    d = gtk.mass / (d * sqrt( d )) * DELTAT * DELTAT * QCONS;
+                    d = gtk.mass / (d * Math.sqrt( d )) * DELTAT * DELTAT * QCONS;
                 } else {
-                    d = gtk.mass / (eps * sqrt( eps ));
+                    d = gtk.mass / (eps * Math.sqrt( eps ));
                 }
 
                 v0 += d0 * d;
@@ -350,7 +350,7 @@ function draw_galaxy( mi ) {
 
             d = d0 * d0 + d1 * d1 + d2 * d2;
             if( d > EPSILON ) {
-                d = 1 / (d * sqrt( d )) * DELTAT * QCONS;
+                d = 1 / (d * Math.sqrt( d )) * DELTAT * QCONS;
             } else {
                 d = 1 / (EPSILON * sqrt_EPSILON) * DELTAT * QCONS;
             }
