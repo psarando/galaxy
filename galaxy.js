@@ -142,6 +142,7 @@ function Galaxy() {
     this.galcol = 0;
 }
 
+var canvas_el, canvas_ctx, attachedDiv;
 function Universe() {
     this.mat = new Array(new Array(3), new Array(3), new Array(3)); /* Movement of stars(?) */
     this.scale = 0.0; /* Scale */
@@ -149,16 +150,30 @@ function Universe() {
     this.midy = 0; /* Middle of screen, y */
     this.size = 0.0; /* */
     this.diff = []; /* array of doubles */
-    this.galaxies = []; /* the Whole Universe */
+    this.galaxies = null; /* the Whole Universe */
     this.f_hititerations = 0; /* # iterations before restart */
     this.step = 0; /* */
     this.rot_y = 0.0; /* rotation of eye around center of universe, around y-axis*/
     this.rot_x = 0.0; /* rotation of eye around center of universe, around x-axis */
+
+    this.onReady = function( parentNode ) {
+        canvas_el = document.createElement('canvas');
+        canvas_el.width = 1024;
+        canvas_el.height = 768;
+        canvas_el.style.cssText = 'position: absolute; z-index: 500;';
+        parentNode.appendChild(canvas_el);
+        canvas_ctx = canvas_el.getContext('2d');
+
+        attachedDiv = document.createElement('div');
+        parentNode.appendChild(attachedDiv);
+
+        init_galaxy();
+    }
 }
 
 var universe = new Universe();
 
-function startover( mi ) {
+function startover() {
     var gp = universe;
     var i, j; /* more tmp */
     var w1, w2; /* more tmp */
@@ -273,36 +288,38 @@ function startover( mi ) {
         }
     }
 
-//    XClearWindow( mi.dpy, mi.window );
+    canvas_ctx.clearRect( 0, 0, canvas_el.width, canvas_el.height );
 
     if( 0 ) {
         console( "ngalaxies=%d, f_hititerations=%d\n", ngalaxies, gp.f_hititerations );
         console( "f_deltat=%g\n", DELTAT );
         console( "Screen: " );
     }
+
+    var checkInterval = setInterval(function () {
+        clearInterval(checkInterval);
+        draw_galaxy();
+    }, 100);
 }
 
-function init_galaxy( mi ) {
+function init_galaxy() {
     var gp = universe;
 
-    gp.f_hititerations = MI_CYCLES( mi );
+    gp.f_hititerations = galaxy_opts.cycles.value;
 
-    gp.scale = (MI_WIN_WIDTH( mi ) + MI_WIN_HEIGHT( mi )) / 8.0;
-    gp.midx =  MI_WIN_WIDTH( mi )  / 2;
-    gp.midy =  MI_WIN_HEIGHT( mi ) / 2;
-    startover( mi );
+    gp.scale = (canvas_el.width + canvas_el.height) / 8.0;
+    gp.midx =  canvas_el.width  / 2;
+    gp.midy =  canvas_el.height / 2;
+    startover();
 }
 
-function draw_galaxy( mi ) {
-    var display = mi.dpy;
-    var window = mi.window;
-    var gc = mi.gc;
+function draw_galaxy() {
     var gp = universe;
     var d, eps, cox, six, cor, sir;  /* tmp */
     var i, j, k; /* more tmp */
     var dummy = null;
 
-//    XClearWindow( mi.dpy, mi.window );
+    canvas_ctx.clearRect( 0, 0, canvas_el.width, canvas_el.height );
 
     if( galaxy_opts.spin.on ) {
         gp.rot_y += 0.01;
@@ -387,9 +404,7 @@ function draw_galaxy( mi ) {
         gt.pos.y += gt.vel.y * DELTAT;
         gt.pos.z += gt.vel.z * DELTAT;
 
-//        XSetForeground( display, gc, MI_PIXEL( mi, COLORSTEP * gt.galcol ) );
-//        XDrawPoints( display, window, gc, gt.newpoints, gt.stars.length,
-//            CoordModeOrigin );
+        drawPoints( gt );
 
         dummy = gt.oldpoints;
         gt.oldpoints = gt.newpoints;
@@ -398,6 +413,32 @@ function draw_galaxy( mi ) {
 
     gp.step++;
     if( gp.step > gp.f_hititerations * 4 ) {
-        startover( mi );
+        startover();
+    } else {
+        var checkInterval = setInterval(function () {
+            clearInterval(checkInterval);
+            draw_galaxy();
+        }, 100);
     }
+}
+
+    function drawPoints( gt ) {
+        for( var i = 0; i < gt.newpoints.length; i++ ) {
+            var newp = gt.newpoints[i];
+            canvas_ctx.fillStyle = COLORSTEP * gt.galcol; // "#f00"
+            canvas_ctx.fillRect( newp.x, newp.y, 1, 1 );
+        }
+    }
+
+function startGalaxy() {
+    var universeDiv = document.createElement('div');
+    universeDiv.khIgnore = true;
+    document.body.appendChild(universeDiv);
+
+    var checkInterval = setInterval(function () {
+        if (window.jQuery) {
+            clearInterval(checkInterval);
+            universe.onReady(universeDiv);
+        }
+    }, 100);
 }
