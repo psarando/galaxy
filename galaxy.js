@@ -47,9 +47,8 @@ var UNIFORM_COLORS = true;
 var reshape_galaxy = 0;
 var galaxy_handle_event = 0;
 function NRAND( n ) {
-    return ((Math.random() % (n)))
+    return Math.round(Math.random() * (n - 1));
 }
-var MAXRAND = 2147483648.0; /* unsigned 1<<31 as a float */
 
 var galaxy_opts = {
     delay: {
@@ -79,7 +78,7 @@ var galaxy_opts = {
 };
 
 function FLOATRAND() {
-    return (Math.random() / (MAXRAND))
+    return Math.random();
 }
 
 var MINSIZE = 1;
