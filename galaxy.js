@@ -171,12 +171,15 @@ function Universe() {
 }
 
 var universe = new Universe();
+var drawInterval = null;
 
 function startover() {
     var gp = universe;
     var i, j; /* more tmp */
     var w1, w2; /* more tmp */
     var d, v, w, h; /* yet more tmp */
+
+    clearInterval(drawInterval);
 
     gp.step = 0;
     gp.rot_y = 0;
@@ -293,10 +296,7 @@ function startover() {
         console( "Screen: " );
     }
 
-    var checkInterval = setInterval(function () {
-        clearInterval(checkInterval);
-        draw_galaxy();
-    }, 100);
+    drawInterval = setInterval(draw_galaxy, 10);
 }
 
 function init_galaxy() {
@@ -411,11 +411,6 @@ function draw_galaxy() {
     gp.step++;
     if( gp.step > gp.f_hititerations * 4 ) {
         startover();
-    } else {
-        var checkInterval = setInterval(function () {
-            clearInterval(checkInterval);
-            draw_galaxy();
-        }, 100);
     }
 }
 
