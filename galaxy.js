@@ -159,7 +159,7 @@ function Universe() {
         canvas_el = document.createElement('canvas');
         canvas_el.width = 1024;
         canvas_el.height = 768;
-        canvas_el.style.cssText = 'position: absolute; z-index: 500;';
+        canvas_el.style.cssText = 'background-color: black; position: absolute; z-index: 500;';
         parentNode.appendChild(canvas_el);
         canvas_ctx = canvas_el.getContext('2d');
 
