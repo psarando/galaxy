@@ -424,7 +424,7 @@ function draw_galaxy() {
     function drawPoints( gt ) {
         for( var i = 0; i < gt.newpoints.length; i++ ) {
             var newp = gt.newpoints[i];
-            canvas_ctx.fillStyle = COLORSTEP * gt.galcol; // "#f00"
+            canvas_ctx.fillStyle = "#" + ((COLORSTEP * gt.galcol * 0x1000/NUMCOLORS) % 0xFFF).toString(16);
             canvas_ctx.fillRect( newp.x, newp.y, 1, 1 );
         }
     }
