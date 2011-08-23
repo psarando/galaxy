@@ -189,11 +189,9 @@ function startover() {
         ngalaxies = MINGALAXIES;
     }
 
-    if( gp.galaxies == null ) {
-        gp.galaxies = [];
-        for( i = 0; i < ngalaxies; ++i ) {
-            gp.galaxies[i] = new Galaxy();
-        }
+    gp.galaxies = [];
+    for( i = 0; i < ngalaxies; ++i ) {
+        gp.galaxies[i] = new Galaxy();
     }
 
     for( i = 0; i < ngalaxies; ++i ) {
