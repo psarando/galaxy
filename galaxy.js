@@ -144,7 +144,7 @@ function Galaxy() {
     this.galcol = "#FFF";
 }
 
-var canvas_el, canvas_ctx, attachedDiv;
+var canvas_el, canvas_ctx;
 function Universe() {
     this.mat = new Array(new Array(3), new Array(3), new Array(3)); /* Movement of stars(?) */
     this.scale = 0.0; /* Scale */
@@ -165,9 +165,6 @@ function Universe() {
         canvas_el.style.cssText = 'background-color: black; position: absolute; z-index: 500;';
         parentNode.appendChild(canvas_el);
         canvas_ctx = canvas_el.getContext('2d');
-
-        attachedDiv = document.createElement('div');
-        parentNode.appendChild(attachedDiv);
 
         init_galaxy();
     }
@@ -432,7 +429,6 @@ function draw_galaxy() {
 
 function startGalaxy() {
     var universeDiv = document.createElement('div');
-    universeDiv.khIgnore = true;
     document.body.appendChild(universeDiv);
 
     var checkInterval = setInterval(function () {
