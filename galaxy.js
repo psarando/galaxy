@@ -45,7 +45,6 @@ var DEFAULTS =
     "*ncolors:  64   \n" +
     "*fpsSolid:  true   \n";
 
-var NUMCOLORS = 64;
 var UNIFORM_COLORS = true;
 var reshape_galaxy = 0;
 var galaxy_handle_event = 0;
@@ -104,8 +103,9 @@ var GALAXYMINSIZE = 0.15;
 var QCONS = 0.001;
 
 var COLORBASE = 16;
+var COLORSTEP = 3
 /* colors per galaxy */
-var COLORSTEP = (NUMCOLORS/COLORBASE)
+var NUMCOLORS = Math.round(0xFFF / COLORSTEP);
 
 
 function XPoint() {
@@ -141,7 +141,7 @@ function Galaxy() {
         y:0.0,
         z:0.0
     };
-    this.galcol = 0;
+    this.galcol = "#FFF";
 }
 
 var canvas_el, canvas_ctx, attachedDiv;
@@ -204,11 +204,16 @@ function startover() {
         var gt = gp.galaxies[i];
         var sinw1, sinw2, cosw1, cosw2;
 
-        gt.galcol = NRAND(COLORBASE - 2);
-        if( gt.galcol > 1 ) {
-            gt.galcol += 2; // Mult 8; 16..31 no green stars
-            // Galaxies still may have some green stars but are not all green.
+        var r = Math.round(NRAND(COLORBASE) / COLORSTEP) * COLORSTEP;
+        var g = Math.round(NRAND(COLORBASE) / COLORSTEP) * COLORSTEP;
+        var b = Math.round(NRAND(COLORBASE) / COLORSTEP) * COLORSTEP;
+        if( r + g + b == 0 ) {
+            // Galaxies should not have black stars.
+            r = COLORSTEP;
+            g = COLORSTEP;
+            b = COLORSTEP;
         }
+        gt.galcol = "#" + r.toString(16) + g.toString(16) + b.toString(16);
 
         var nstars = (NRAND( MAX_STARS / 2 )) + MAX_STARS / 2;
         gt.stars = [];
@@ -420,7 +425,7 @@ function draw_galaxy() {
     function drawPoints( gt ) {
         for( var i = 0; i < gt.newpoints.length; i++ ) {
             var newp = gt.newpoints[i];
-            canvas_ctx.fillStyle = "#" + ((COLORSTEP * gt.galcol * 0x1000/NUMCOLORS) % 0xFFF).toString(16);
+            canvas_ctx.fillStyle = gt.galcol;
             canvas_ctx.fillRect( newp.x, newp.y, 1, 1 );
         }
     }
