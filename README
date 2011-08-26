@@ -1,0 +1,16 @@
+= Colliding Galaxies
+
+This is my _why Day project where I decided to convert the XScreensaver, Galaxy, that comes with many Linux distributions, from C to JavaScript source, animated by HTML5's canvas element.
+The canvas and jQuery code was inspired by the kathack.com script by Alex Leone, David Nufer, David Truong.
+
+Permission to use, copy, modify, and distribute this software and its documentation for any purpose and without fee is hereby granted, provided that the above copyright notice appear in all copies and that both that copyright notice and this permission notice appear in supporting documentation.
+
+This file is provided AS IS with no warranties of any kind.  The author shall have no liability with respect to the infringement of copyrights, trade secrets or any patents by this file or any part thereof.  In no event will the author be liable for any lost revenue or profits or other special, indirect and consequential damages.
+
+== Authors
+
+Originally done by Uli Siegmund <uli@wombat.okapi.sub.org> on Amiga for EGS in Cluster
+Port from Cluster/EGS to C/Intuition by Harald Backert
+Port to X11 and incorporation into xlockmore by Hubert Feyrer <hubert.feyrer@rz.uni-regensburg.de>
+Port to JavaScript by Paul Sarando
+

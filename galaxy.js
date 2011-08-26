@@ -1,4 +1,3 @@
-//#define STANDALONE 1
 /* -*- Mode: JavaScript; tab-width: 4 -*- */
 /* galaxy --- spinning galaxies */
 
@@ -7,6 +6,7 @@
  * Port from Cluster/EGS to C/Intuition by Harald Backert
  * Port to X11 and incorporation into xlockmore by Hubert Feyrer
  *   <hubert.feyrer@rz.uni-regensburg.de>
+ * Port to JavaScript by Paul Sarando
  *
  * Permission to use, copy, modify, and distribute this software and its
  * documentation for any purpose and without fee is hereby granted,
@@ -21,6 +21,9 @@
  * other special, indirect and consequential damages.
  *
  * Revision History:
+ * 19-Aug-11: Paul Sarando
+ *            Converted from C source to JavaScript,
+ *            with some canvas and jQuery code inspired by kathack.com
  * 26-Aug-00: robert.nagtegaal@phil.uu.nl and roland@tschai.demon.nl:
  *            various improvements
  * 10-May-97: jwz@jwz.org: turned into a standalone program.
@@ -291,9 +294,9 @@ function startover() {
     canvas_ctx.clearRect( 0, 0, canvas_el.width, canvas_el.height );
 
     if( 0 ) {
-        console( "ngalaxies=%d, f_hititerations=%d\n", ngalaxies, gp.f_hititerations );
-        console( "f_deltat=%g\n", DELTAT );
-        console( "Screen: " );
+        console.log( "ngalaxies=%d, f_hititerations=%d\n", ngalaxies, gp.f_hititerations );
+        console.log( "f_deltat=%g\n", DELTAT );
+        console.log( "Screen: " );
     }
 
     drawInterval = setInterval(draw_galaxy, 10);
