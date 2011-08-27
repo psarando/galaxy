@@ -48,36 +48,16 @@ var DEFAULTS =
 var UNIFORM_COLORS = true;
 var reshape_galaxy = 0;
 var galaxy_handle_event = 0;
+
 function NRAND( n ) {
-    return Math.round(Math.random() * (n - 1));
+    return Math.round( Math.random() * (n - 1) );
 }
 
-var galaxy_opts = {
-    delay: {
-        value: 20000,
-        desc: "Frame rate (0 - 100000)"
-    },
-    batchcount: {
-        value: -5,
-        desc: "Count (-20 - 20)"
-    },
-    cycles: {
-        value: 250,
-        desc: "Duration (10 - 1000)"
-    },
-    ncolors: {
-        value: 64,
-        desc: "Number of colors (10 - 255)"
-    },
-    tracks: {
-        on: true,
-        desc: "turn on/off star tracks"
-    },
-    spin: {
-        on: true,
-        desc: "do/don't spin viewpoint"
-    }
-};
+var delay = 10;
+var batchcount = -5;
+var cycles = 250;
+var tracks = false;
+var spin = true;
 
 function FLOATRAND() {
     return Math.random();
@@ -103,9 +83,9 @@ var GALAXYMINSIZE = 0.15;
 var QCONS = 0.001;
 
 var COLORBASE = 16;
-var COLORSTEP = 3
 /* colors per galaxy */
-var NUMCOLORS = Math.round(0xFFF / COLORSTEP);
+var NUMCOLORS = 1365;
+var COLORSTEP = Math.round( 0xFFF / NUMCOLORS )
 
 
 function XPoint() {
@@ -146,7 +126,7 @@ function Galaxy() {
 
 var canvas_el, canvas_ctx;
 function Universe() {
-    this.mat = new Array(new Array(3), new Array(3), new Array(3)); /* Movement of stars(?) */
+    this.mat = new Array( new Array(3), new Array(3), new Array(3) ); /* Movement of stars(?) */
     this.scale = 0.0; /* Scale */
     this.midx = 0; /* Middle of screen, x */
     this.midy = 0; /* Middle of screen, y */
@@ -159,12 +139,13 @@ function Universe() {
     this.rot_x = 0.0; /* rotation of eye around center of universe, around x-axis */
 
     this.onReady = function( parentNode ) {
-        canvas_el = document.createElement('canvas');
+        canvas_el = document.createElement( 'canvas' );
         canvas_el.width = 1024;
         canvas_el.height = 768;
         canvas_el.style.cssText = 'background-color: black; position: absolute; z-index: 500;';
-        parentNode.appendChild(canvas_el);
-        canvas_ctx = canvas_el.getContext('2d');
+        canvas_ctx = canvas_el.getContext( '2d' );
+
+        parentNode.appendChild( canvas_el );
 
         init_galaxy();
     }
@@ -179,13 +160,13 @@ function startover() {
     var w1, w2; /* more tmp */
     var d, v, w, h; /* yet more tmp */
 
-    clearInterval(drawInterval);
+    clearInterval( drawInterval );
 
     gp.step = 0;
     gp.rot_y = 0;
     gp.rot_x = 0;
 
-    var ngalaxies = galaxy_opts.batchcount.value;
+    var ngalaxies = batchcount;
     if( ngalaxies < -MINGALAXIES ) {
         ngalaxies = NRAND( -ngalaxies - MINGALAXIES + 1 ) + MINGALAXIES;
     } else if( ngalaxies < MINGALAXIES ) {
@@ -201,9 +182,9 @@ function startover() {
         var gt = gp.galaxies[i];
         var sinw1, sinw2, cosw1, cosw2;
 
-        var r = Math.round(NRAND(COLORBASE) / COLORSTEP) * COLORSTEP;
-        var g = Math.round(NRAND(COLORBASE) / COLORSTEP) * COLORSTEP;
-        var b = Math.round(NRAND(COLORBASE) / COLORSTEP) * COLORSTEP;
+        var r = Math.round( NRAND( COLORBASE ) / COLORSTEP ) * COLORSTEP;
+        var g = Math.round( NRAND( COLORBASE ) / COLORSTEP ) * COLORSTEP;
+        var b = Math.round( NRAND( COLORBASE ) / COLORSTEP ) * COLORSTEP;
         if( r + g + b == 0 ) {
             // Galaxies should not have black stars.
             r = COLORSTEP;
@@ -301,13 +282,13 @@ function startover() {
         console.log( "Screen: " );
     }
 
-    drawInterval = setInterval(draw_galaxy, 10);
+    drawInterval = setInterval( draw_galaxy, delay );
 }
 
 function init_galaxy() {
     var gp = universe;
 
-    gp.f_hititerations = galaxy_opts.cycles.value;
+    gp.f_hititerations = cycles;
 
     gp.scale = (canvas_el.width + canvas_el.height) / 8.0;
     gp.midx =  canvas_el.width  / 2;
@@ -321,9 +302,11 @@ function draw_galaxy() {
     var i, j, k; /* more tmp */
     var dummy = null;
 
-    canvas_ctx.clearRect( 0, 0, canvas_el.width, canvas_el.height );
+    if( !tracks ) {
+        canvas_ctx.clearRect( 0, 0, canvas_el.width, canvas_el.height );
+    }
 
-    if( galaxy_opts.spin.on ) {
+    if( spin ) {
         gp.rot_y += 0.01;
         gp.rot_x += 0.004;
     }
@@ -338,7 +321,7 @@ function draw_galaxy() {
     for( i = 0; i < gp.galaxies.length; ++i ) {
         var gt = gp.galaxies[i];
 
-        for( j = 0; j < gp.galaxies[i].stars.length; ++j ) {
+        for( j = 0; j < gt.stars.length; ++j ) {
             var st = gt.stars[j];
             var newp = gt.newpoints[j];
             var v0 = st.vel.x;
@@ -406,7 +389,7 @@ function draw_galaxy() {
         gt.pos.y += gt.vel.y * DELTAT;
         gt.pos.z += gt.vel.z * DELTAT;
 
-        drawPoints( gt );
+        XDrawPoints( gt );
 
         dummy = gt.oldpoints;
         gt.oldpoints = gt.newpoints;
@@ -419,22 +402,66 @@ function draw_galaxy() {
     }
 }
 
-    function drawPoints( gt ) {
-        for( var i = 0; i < gt.newpoints.length; i++ ) {
-            var newp = gt.newpoints[i];
-            canvas_ctx.fillStyle = gt.galcol;
-            canvas_ctx.fillRect( newp.x, newp.y, 1, 1 );
-        }
+function XDrawPoints( gt ) {
+    for( var i = 0; i < gt.newpoints.length; i++ ) {
+        var newp = gt.newpoints[i];
+        canvas_ctx.fillStyle = gt.galcol;
+        canvas_ctx.fillRect( newp.x, newp.y, 1, 1 );
     }
+}
 
-function startGalaxy() {
+function buildForm( universeDiv ) {
+    var div = document.createElement('div');
+    div.innerHTML =
+'<h1 style="text-align:center; font-size:16pt">Galactic Collisions</h1>\
+<div style="text-align:center; color:gray;">\
+<label title="Delay in milliseconds (10 - 1000)">\
+Animation Delay: <input id="delay" type="text" size="6" value="10" />\
+</label><br />\
+<label title="Duration (10 - 1000)">\
+Duration: <input id="cycles" type="text" size="6" value="250" />\
+</label><br />\
+<label title="Max number of stars per galaxy (10 - 10000)">\
+Max number of stars per galaxy: <input id="maxstars" type="text" size="6" value="3000" />\
+</label><br />\
+<label title="Number of colors per galaxy (1 step = 4096 colors, 15 steps = 7 colors)">\
+Color step per galaxy: <input id="colorstep" type="text" size="6" value="3" />\
+</label><br />\
+<label title="turn on/off star tracks">\
+Star tracks? <input id="tracks" type="checkbox" />\
+</label><br />\
+<label title="do/don\'t spin viewpoint">\
+Spin view? <input id="spin" type="checkbox" checked="checked" />\
+</label>\
+</div>\
+<div id="btnStart" style="text-align:center; font-size:16pt">Loading...</div>';
+
+    universeDiv.appendChild( div );
+
+    return div;
+}
+
+function refresh_galaxy() {
     var universeDiv = document.createElement('div');
-    document.body.appendChild(universeDiv);
+    var form = buildForm( universeDiv );
+    document.body.appendChild( universeDiv );
 
-    var checkInterval = setInterval(function () {
-        if (window.jQuery) {
-            clearInterval(checkInterval);
-            universe.onReady(universeDiv);
+    var checkInterval = setInterval( function () {
+        if ( window.jQuery ) {
+            clearInterval( checkInterval );
+
+            jQuery('#btnStart').empty();
+            jQuery('<button>Start!</button>').click( function () {
+                delay = parseInt( jQuery('#delay').val() );
+                cycles = parseInt( jQuery('#cycles').val() );
+                MAX_STARS = parseInt( jQuery('#maxstars').val() );
+                COLORSTEP = parseInt( jQuery('#colorstep').val() );
+                tracks = (jQuery('#tracks').attr('checked'))? true : false;
+                spin = (jQuery('#spin').attr('checked'))? true : false;
+
+                universeDiv.removeChild(form);
+                universe.onReady( universeDiv );
+            }).css( 'font-size', '24pt' ).appendTo( '#btnStart' );
         }
-    }, 100);
+    }, 100 );
 }
